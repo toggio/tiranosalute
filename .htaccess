@@ -1,0 +1,16 @@
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Preserve Authorization header for Bearer token auth.
+    RewriteCond %{HTTP:Authorization} ^(.+)$
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
+    # Deny direct access to non-public project folders.
+    RewriteRule ^(data|docs|scripts|src)/ - [F,L,NC]
+
+    # Front controller: route everything to index.php
+    RewriteRule ^index\.php$ - [L]
+    RewriteRule ^.*$ index.php [L,QSA]
+</IfModule>
