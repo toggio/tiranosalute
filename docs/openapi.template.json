@@ -1,0 +1,2877 @@
+{
+   "openapi": "3.2.0",
+    "info": {
+        "title": "Tirano Salute API",
+        "version": "1.1.0",
+        "description": "API REST JSON per l'applicazione Tirano Salute"
+    },
+    "servers": [
+        {
+            "url": "__BASE_PATH__/api",
+            "description": ""
+        }
+    ],
+    "security": [
+        {
+            "cookieAuth": []
+        },
+        {
+            "bearerAuth": []
+        }
+    ],
+    "paths": {
+        "/meta": {
+            "get": {
+                "security": [],
+                "tags": [
+                    "Meta"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MetaEnvelope"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "security": [],
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login effettuato",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/CsrfHeader"
+                    }
+                ],
+                "description": "Con cookie/sessione la write richiede X-CSRF-Token. Con bearer token il CSRF non è richiesto e il logout revoca il token corrente.",
+                "responses": {
+                    "200": {
+                        "description": "Logout effettuato",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            }
+        },
+        "/login/bearer": {
+            "post": {
+                "security": [],
+                "tags": [
+                    "Auth"
+                ],
+                "description": "Genera un bearer token per qualunque utente attivo con credenziali valide. Il token eredita sempre i permessi del ruolo associato ed è soggetto alle stesse regole RBAC delle richieste via sessione web.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BearerLoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Token generato",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BearerTokenEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profilo autenticato",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                }
+            }
+        },
+        "/change-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/CsrfHeader"
+                    }
+                ],
+                "description": "Aggiorna la password dell'utente autenticato. Se l'utente ha effettuato accesso con una password reimpostata, questa chiamata è necessaria per uscire dallo stato must_change_password. Con cookie/sessione la write richiede X-CSRF-Token. Con bearer token il CSRF non è richiesto.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangePasswordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password aggiornata",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/categories": {
+            "get": {
+                "tags": [
+                    "Catalog"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Categorie visita",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoriesEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            }
+        },
+        "/availability/search": {
+            "get": {
+                "tags": [
+                    "Availability"
+                ],
+                "description": "La ricerca lavora su slot da 15 minuti. Se doctor_id non è presente, la risposta aggrega gli slot in ordine cronologico e per ogni orario restituisce medico consigliato, medici alternativi e indicatori del ranking. La raccomandazione combina efficienza storica per categoria (durata stimata e ritardo medio stimato, smussati verso la media globale) e carico operativo (daily_load e weekly_load). Se doctor_id è presente, la ricerca resta limitata a quel medico. patient_id è usabile solo da RECEPTION/INTEGRATOR per escludere conflitti del paziente; se valorizzato ma non valido, la API restituisce 422.",
+                "parameters": [
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                            "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                            "examples": [
+                                "2026-03-30 09:00:00"
+                            ]
+                        },
+                        "description": "Formato richiesto: YYYY-MM-DD HH:mm:ss."
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                            "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                            "examples": [
+                                "2026-03-30 12:00:00"
+                            ]
+                        },
+                        "description": "Formato richiesto: YYYY-MM-DD HH:mm:ss."
+                    },
+                    {
+                        "name": "visit_category",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "doctor_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "patient_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Slot disponibili",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AvailabilityEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/appointments/book": {
+            "post": {
+                "tags": [
+                    "Appointments"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/CsrfHeader"
+                    }
+                ],
+                "description": "Conferma finale di uno slot già scelto sulla griglia a 15 minuti. Payload canonico: visit_category, visit_reason, notes, slot_start, selected_doctor_id. slot_start deve essere già allineato alla griglia di 15 minuti. patient_id è ammesso solo per RECEPTION/INTEGRATOR; per PATIENT il backend usa sempre il paziente autenticato. Il backend impedisce più di una visita attiva per paziente. Con cookie/sessione la write richiede X-CSRF-Token; con bearer token il CSRF non è richiesto.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AppointmentBookingRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Prenotazione creata",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AppointmentEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/appointments": {
+            "get": {
+                "tags": [
+                    "Appointments"
+                ],
+                "parameters": [
+                    {
+                        "name": "mode",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "todo",
+                                "history"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "visit_category",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "doctor_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "from_date",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to_date",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Numero massimo di visite da restituire. Se omesso, l'endpoint non applica un limite di default."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Elenco visite",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AppointmentsEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            }
+        },
+        "/appointments/{id}": {
+            "get": {
+                "tags": [
+                    "Appointments"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/AppointmentId"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dettaglio visita",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AppointmentEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
+                }
+            }
+        },
+        "/appointments/{id}/cancel": {
+            "post": {
+                "tags": [
+                    "Appointments"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/AppointmentId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/CsrfHeader"
+                    }
+                ],
+                "description": "Annulla una visita PRENOTATA. Il paziente può annullare solo le proprie visite entro la mezzanotte del giorno precedente. Con cookie/sessione la write richiede X-CSRF-Token; con bearer token il CSRF non è richiesto.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CancelRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Visita annullata",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AppointmentEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/appointments/{id}/start": {
+            "post": {
+                "tags": [
+                    "Appointments"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/AppointmentId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/CsrfHeader"
+                    }
+                ],
+                "description": "Avvia una visita PRENOTATA assegnata al medico autenticato. Con cookie/sessione la write richiede X-CSRF-Token; con bearer token il CSRF non è richiesto.",
+                "responses": {
+                    "200": {
+                        "description": "Visita in corso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AppointmentEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    }
+                }
+            }
+        },
+        "/appointments/{id}/complete": {
+            "post": {
+                "tags": [
+                    "Appointments"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/AppointmentId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/CsrfHeader"
+                    }
+                ],
+                "description": "Con cookie/sessione la write richiede X-CSRF-Token; con bearer token il CSRF non è richiesto.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CompleteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Visita conclusa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AppointmentCompleteEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/reports": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "parameters": [
+                    {
+                        "name": "tax_code",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Obbligatorio per INTEGRATOR; ignorato per PATIENT e DOCTOR."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Referti visibili",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReportsEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/reports/{id}": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/ReportId"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dettaglio referto",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReportEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
+                }
+            }
+        },
+        "/reports/{id}/download": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "description": "Restituisce HTML stampabile (text/html).",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/ReportId"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Referto HTML stampabile",
+                        "content": {
+                            "text/html": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                }
+            }
+        },
+        "/doctors/{id}/availability": {
+            "get": {
+                "tags": [
+                    "Availability"
+                ],
+                "description": "Disponibilità di un medico. Accesso consentito a DOCTOR sul proprio profilo e a RECEPTION/INTEGRATOR su qualunque medico. Le righe possono includere anche valid_from e valid_to per fasce temporanee o a termine.",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/DoctorId"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Disponibilità medico",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DoctorAvailabilityEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Availability"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/DoctorId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/CsrfHeader"
+                    }
+                ],
+                "description": "Con cookie/sessione la write richiede X-CSRF-Token; con bearer token il CSRF non è richiesto.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DoctorAvailabilityUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Disponibilità aggiornata",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DoctorAvailabilityEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/patients": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "description": "Elenco pazienti con limite predefinito e filtri opzionali per nome e codice fiscale.",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tax_code",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 30
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Elenco pazienti",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PatientsEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/CsrfHeader"
+                    }
+                ],
+                "description": "Con cookie/sessione la write richiede X-CSRF-Token; con bearer token il CSRF non è richiesto.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatientCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Paziente creato",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PatientEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/patients/{id}": {
+            "put": {
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/PatientId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/CsrfHeader"
+                    }
+                ],
+                "description": "Con cookie/sessione la write richiede X-CSRF-Token; con bearer token il CSRF non è richiesto.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatientUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Paziente aggiornato",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PatientEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/staff": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "description": "Elenco dello staff gestibile dall integrator. Espone solo gli utenti RECEPTION.",
+                "responses": {
+                    "200": {
+                        "description": "Elenco staff",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StaffUsersEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/CsrfHeader"
+                    }
+                ],
+                "description": "Crea un utente staff di ruolo RECEPTION. Solo INTEGRATOR. Con cookie/sessione la write richiede X-CSRF-Token; con bearer token il CSRF non è richiesto.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StaffCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Utente staff creato",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/staff/{id}": {
+            "put": {
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/StaffUserId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/CsrfHeader"
+                    }
+                ],
+                "description": "Aggiorna un utente staff gestibile. Questa API aggiorna solo utenti RECEPTION. Se viene inviato il campo password, il backend reimposta la password e imposta must_change_password=true. Solo INTEGRATOR. Con cookie/sessione la write richiede X-CSRF-Token; con bearer token il CSRF non è richiesto.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StaffUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Utente staff aggiornato",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/doctors": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "description": "Senza query param scope restituisce l'elenco dei medici attivi usato dai flussi autenticati di disponibilità e prenotazione. Con scope=all restituisce l'elenco completo per funzioni amministrative ed è consentito solo a RECEPTION e INTEGRATOR.",
+                "parameters": [
+                    {
+                        "name": "scope",
+                        "in": "query",
+                        "required": false,
+                        "description": "Se valorizzato a all richiede ruolo RECEPTION o INTEGRATOR e restituisce anche i medici non attivi. Se assente, l'endpoint resta disponibile a qualunque utente autenticato e restituisce solo i medici attivi.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "all"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Elenco medici",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DoctorsEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/CsrfHeader"
+                    }
+                ],
+                "description": "Con cookie/sessione la write richiede X-CSRF-Token; con bearer token il CSRF non è richiesto.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DoctorCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Medico creato",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DoctorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/doctors/{id}": {
+            "put": {
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/DoctorId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/CsrfHeader"
+                    }
+                ],
+                "description": "Con cookie/sessione la write richiede X-CSRF-Token; con bearer token il CSRF non è richiesto.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DoctorUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Medico aggiornato",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DoctorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/stats": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "description": "Dashboard statistiche disponibile solo per INTEGRATOR. Oltre ai tempi medi espone anche total_patients e total_doctors per la supervisione amministrativa. Il performance_score resta separato dallo score operativo di assegnazione visite: il ritardo pesa più della durata, il confronto è interno al gruppo medici e un valore più alto è migliore.",
+                "responses": {
+                    "200": {
+                        "description": "Statistiche",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StatsEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "parameters": {
+            "CsrfHeader": {
+                "name": "X-CSRF-Token",
+                "in": "header",
+                "required": false,
+                "schema": {
+                    "type": "string"
+                },
+                "description": "Con cookie/sessione la write richiede X-CSRF-Token; con bearer token il CSRF non è richiesto."
+            },
+            "AppointmentId": {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "ReportId": {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "DoctorId": {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "PatientId": {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "StaffUserId": {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "integer"
+                }
+            }
+        },
+        "responses": {
+            "BadRequest": {
+                "description": "Payload JSON non valido",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "Unauthorized": {
+                "description": "Non autenticato",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "Forbidden": {
+                "description": "Accesso negato o richiesta bloccata da vincoli applicativi (es. ruolo insufficiente, PASSWORD_CHANGE_REQUIRED, CSRF_INVALID, utente non attivo).",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "NotFound": {
+                "description": "Non trovato",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "Conflict": {
+                "description": "Conflitto",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "ValidationError": {
+                "description": "Validazione fallita",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "schemas": {
+            "MetaEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/Meta"
+                    }
+                }
+            },
+            "Meta": {
+                "type": "object",
+                "properties": {
+                    "app_name": {
+                        "type": "string"
+                    },
+                    "base_path": {
+                        "type": "string"
+                    },
+                    "api_base": {
+                        "type": "string"
+                    },
+                    "timezone": {
+                        "type": "string"
+                    },
+                    "csrf_cookie_name": {
+                        "type": "string"
+                    },
+                    "auth_cookie_name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "MessageEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "message": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "ErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string"
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "details": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "additionalProperties": true
+                                    },
+                                    {
+                                        "type": "array",
+                                        "items": {}
+                                    },
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "boolean"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "code",
+                            "message"
+                        ]
+                    }
+                },
+                "required": [
+                    "error"
+                ]
+            },
+            "LoginRequest": {
+                "type": "object",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                }
+            },
+            "BearerLoginRequest": {
+                "type": "object",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "token_name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ChangePasswordRequest": {
+                "type": "object",
+                "required": [
+                    "current_password",
+                    "new_password"
+                ],
+                "properties": {
+                    "current_password": {
+                        "type": "string"
+                    },
+                    "new_password": {
+                        "type": "string",
+                        "minLength": 8
+                    }
+                }
+            },
+            "LoginEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "user": {
+                                "$ref": "#/components/schemas/User"
+                            }
+                        }
+                    }
+                }
+            },
+            "BearerTokenEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "access_token": {
+                                "type": "string"
+                            },
+                            "token_type": {
+                                "type": "string"
+                            },
+                            "expires_at": {
+                                "type": "string",
+                                "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                                "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                                "examples": [
+                                    "2026-03-30 09:00:00"
+                                ]
+                            },
+                            "user": {
+                                "$ref": "#/components/schemas/User"
+                            }
+                        }
+                    }
+                }
+            },
+            "UserEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/User"
+                    }
+                }
+            },
+            "StaffUsersEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/User"
+                        }
+                    }
+                }
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "PATIENT",
+                            "DOCTOR",
+                            "RECEPTION",
+                            "INTEGRATOR"
+                        ]
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "must_change_password": {
+                        "type": "boolean",
+                        "description": "Se true, l'utente può solo consultare /me, eseguire /change-password o /logout finché non aggiorna la password reimpostata."
+                    },
+                    "patient_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "doctor_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "CategoriesEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "AvailabilityEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AvailabilitySlot"
+                        }
+                    }
+                }
+            },
+            "AvailabilitySlot": {
+                "type": "object",
+                "description": "Slot aggregato della griglia a 15 minuti.",
+                "properties": {
+                    "slot_start": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "slot_end": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:15:00"
+                        ]
+                    },
+                    "recommended_doctor_id": {
+                        "type": "integer"
+                    },
+                    "recommended_doctor": {
+                        "$ref": "#/components/schemas/AvailabilityDoctor"
+                    },
+                    "alternative_doctors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AvailabilityDoctor"
+                        }
+                    },
+                    "ranking_context": {
+                        "$ref": "#/components/schemas/AvailabilityRankingContext"
+                    },
+                    "doctors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AvailabilityDoctor"
+                        }
+                    }
+                }
+            },
+            "AvailabilityRankingContext": {
+                "type": "object",
+                "properties": {
+                    "candidate_count": {
+                        "type": "integer"
+                    },
+                    "uses_comparative_ranking": {
+                        "type": "boolean",
+                        "description": "True quando nello slot ci sono più medici candidati e non è stata indicata una preferenza vincolante."
+                    }
+                }
+            },
+            "AvailabilityDoctor": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "recommended": {
+                        "type": "boolean"
+                    },
+                    "estimated_duration_minutes": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "estimated_delay_minutes": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "daily_load": {
+                        "type": "integer"
+                    },
+                    "weekly_load": {
+                        "type": "integer"
+                    },
+                    "samples": {
+                        "type": "integer"
+                    },
+                    "score": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Score operativo dello slot: più basso è migliore."
+                    }
+                }
+            },
+            "AppointmentBookingRequest": {
+                "type": "object",
+                "required": [
+                    "visit_category",
+                    "visit_reason",
+                    "slot_start",
+                    "selected_doctor_id"
+                ],
+                "properties": {
+                    "patient_id": {
+                        "type": "integer"
+                    },
+                    "visit_category": {
+                        "type": "string"
+                    },
+                    "visit_reason": {
+                        "type": "string"
+                    },
+                    "notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "slot_start": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "selected_doctor_id": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "CancelRequest": {
+                "type": "object",
+                "required": [
+                    "reason"
+                ],
+                "properties": {
+                    "reason": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CompleteRequest": {
+                "type": "object",
+                "required": [
+                    "report_text"
+                ],
+                "properties": {
+                    "report_text": {
+                        "type": "string"
+                    }
+                }
+            },
+            "AppointmentsEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Appointment"
+                        }
+                    }
+                }
+            },
+            "AppointmentEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/Appointment"
+                    }
+                }
+            },
+            "AppointmentCompleteEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "appointment": {
+                                "$ref": "#/components/schemas/Appointment"
+                            },
+                            "report": {
+                                "$ref": "#/components/schemas/ReportCreated"
+                            }
+                        }
+                    }
+                }
+            },
+            "Appointment": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "patient_id": {
+                        "type": "integer"
+                    },
+                    "doctor_id": {
+                        "type": "integer"
+                    },
+                    "visit_category": {
+                        "type": "string"
+                    },
+                    "visit_reason": {
+                        "type": "string"
+                    },
+                    "notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "scheduled_start": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "scheduled_end": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:15:00"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "PRENOTATA",
+                            "IN_CORSO",
+                            "CONCLUSA",
+                            "ANNULLATA"
+                        ]
+                    },
+                    "started_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "ended_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:15:00"
+                        ]
+                    },
+                    "canceled_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "cancellation_reason": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "patient_first_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "patient_last_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "patient_email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "email"
+                    },
+                    "patient_tax_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "doctor_first_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "doctor_last_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "doctor_email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "email"
+                    },
+                    "report_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "has_report": {
+                        "type": "boolean"
+                    },
+                    "history": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AppointmentHistoryEntry"
+                        }
+                    }
+                }
+            },
+            "AppointmentHistoryEntry": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "appointment_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "from_status": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "to_status": {
+                        "type": "string"
+                    },
+                    "changed_by_user_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "changed_at": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "first_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "last_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "role": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "ReportCreated": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "appointment_id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    }
+                }
+            },
+            "ReportsEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ReportSummary"
+                        }
+                    }
+                }
+            },
+            "ReportEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/ReportDetail"
+                    }
+                }
+            },
+            "ReportSummary": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "appointment_id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "visit_category": {
+                        "type": "string"
+                    },
+                    "visit_reason": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "scheduled_start": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "started_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "ended_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:15:00"
+                        ]
+                    },
+                    "patient_first_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "patient_last_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "patient_tax_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "doctor_first_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "doctor_last_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "ReportDetail": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ReportSummary"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "report": {
+                                "$ref": "#/components/schemas/ReportPayload"
+                            }
+                        }
+                    }
+                ]
+            },
+            "ReportPayload": {
+                "type": "object",
+                "properties": {
+                    "appointment_id": {
+                        "type": "integer"
+                    },
+                    "visit_category": {
+                        "type": "string"
+                    },
+                    "report_text": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    }
+                }
+            },
+            "DoctorAvailabilityEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DoctorAvailabilityRow"
+                        }
+                    }
+                }
+            },
+            "DoctorAvailabilityRow": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "doctor_id": {
+                        "type": "integer"
+                    },
+                    "weekday": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 7
+                    },
+                    "start_time": {
+                        "type": "string"
+                    },
+                    "end_time": {
+                        "type": "string"
+                    },
+                    "valid_from": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date",
+                        "description": "Data di inizio validità opzionale per disponibilità temporanee o a termine."
+                    },
+                    "valid_to": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date",
+                        "description": "Data di fine validità opzionale per disponibilità temporanee o a termine."
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    }
+                }
+            },
+            "DoctorAvailabilityUpdateRequest": {
+                "type": "object",
+                "required": [
+                    "slots"
+                ],
+                "properties": {
+                    "slots": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "weekday",
+                                "start_time",
+                                "end_time"
+                            ],
+                            "properties": {
+                                "weekday": {
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 7
+                                },
+                                "start_time": {
+                                    "type": "string"
+                                },
+                                "end_time": {
+                                    "type": "string"
+                                },
+                                "valid_from": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "date",
+                                    "description": "Data di inizio validità opzionale per disponibilità temporanee o a termine."
+                                },
+                                "valid_to": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "date",
+                                    "description": "Data di fine validità opzionale per disponibilità temporanee o a termine."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "PatientCreateRequest": {
+                "type": "object",
+                "required": [
+                    "first_name",
+                    "last_name",
+                    "tax_code",
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "tax_code": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "active": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "PatientUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "tax_code": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8,
+                        "description": "Se valorizzata durante un aggiornamento amministrativo, il backend reimposta la password e imposta must_change_password=true."
+                    }
+                }
+            },
+            "PatientEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/Patient"
+                    }
+                }
+            },
+            "PatientsEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Patient"
+                        }
+                    }
+                }
+            },
+            "Patient": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "tax_code": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    }
+                }
+            },
+            "StaffCreateRequest": {
+                "type": "object",
+                "required": [
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "RECEPTION"
+                        ],
+                        "default": "RECEPTION",
+                        "description": "Valore fisso: questa API crea solo utenti reception."
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "active": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "StaffUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "RECEPTION"
+                        ],
+                        "description": "Campo di coerenza: questa API gestisce solo utenti reception."
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "active": {
+                        "type": "boolean",
+                        "description": "Gli utenti reception possono essere attivati o disattivati."
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8,
+                        "description": "Se valorizzata durante un aggiornamento amministrativo, il backend reimposta la password e imposta must_change_password=true."
+                    }
+                }
+            },
+            "DoctorCreateRequest": {
+                "type": "object",
+                "required": [
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "internal_code",
+                    "password"
+                ],
+                "properties": {
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "internal_code": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "active": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "DoctorUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "internal_code": {
+                        "type": "string"
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8,
+                        "description": "Se valorizzata durante un aggiornamento amministrativo, il backend reimposta la password e imposta must_change_password=true."
+                    }
+                }
+            },
+            "DoctorEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/Doctor"
+                    }
+                }
+            },
+            "DoctorsEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Doctor"
+                        }
+                    }
+                }
+            },
+            "Doctor": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "internal_code": {
+                        "type": "string"
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+                        "description": "Formato: YYYY-MM-DD HH:mm:ss.",
+                        "examples": [
+                            "2026-03-30 09:00:00"
+                        ]
+                    }
+                }
+            },
+            "StatsEnvelope": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/Stats"
+                    }
+                }
+            },
+            "Stats": {
+                "type": "object",
+                "properties": {
+                    "global": {
+                        "$ref": "#/components/schemas/StatsGlobal"
+                    },
+                    "by_doctor": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StatsDoctor"
+                        }
+                    },
+                    "by_category": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StatsCategory"
+                        }
+                    }
+                }
+            },
+            "StatsGlobal": {
+                "type": "object",
+                "properties": {
+                    "total_patients": {
+                        "type": "integer"
+                    },
+                    "total_doctors": {
+                        "type": "integer"
+                    },
+                    "total_appointments": {
+                        "type": "integer"
+                    },
+                    "cancelled_appointments": {
+                        "type": "integer"
+                    },
+                    "avg_visit_duration_minutes": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "avg_delay_minutes": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "description": "Ritardo medio positivo o nullo, espresso in minuti."
+                    }
+                }
+            },
+            "StatsDoctor": {
+                "type": "object",
+                "properties": {
+                    "doctor_id": {
+                        "type": "integer"
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "total_visits": {
+                        "type": "integer",
+                        "description": "Numero di visite concluse per il medico."
+                    },
+                    "cancelled_visits": {
+                        "type": "integer",
+                        "description": "Numero di appuntamenti annullati assegnati al medico."
+                    },
+                    "avg_duration_minutes": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "avg_delay_minutes": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "performance_score": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "description": "Indicatore di dashboard: combina il 70% di una base assoluta derivata dalla penalty e il 30% di un confronto relativo interno tra i medici. Un valore più alto è migliore. Non coincide con lo score operativo di assegnazione."
+                    }
+                }
+            },
+            "StatsCategory": {
+                "type": "object",
+                "properties": {
+                    "visit_category": {
+                        "type": "string"
+                    },
+                    "total_visits": {
+                        "type": "integer",
+                        "description": "Numero di visite concluse per categoria."
+                    },
+                    "cancelled_visits": {
+                        "type": "integer",
+                        "description": "Numero di appuntamenti annullati per categoria."
+                    },
+                    "avg_duration_minutes": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "cookieAuth": {
+                "type": "apiKey",
+                "in": "cookie",
+                "name": "__AUTH_COOKIE_NAME__"
+            },
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Meta"
+        },
+        {
+            "name": "Auth"
+        },
+        {
+            "name": "Catalog"
+        },
+        {
+            "name": "Availability"
+        },
+        {
+            "name": "Appointments"
+        },
+        {
+            "name": "Reports"
+        },
+        {
+            "name": "Admin"
+        }
+    ]
+}

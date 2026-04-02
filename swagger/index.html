@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Documentazione Swagger delle API di Tirano Salute per demo, sviluppo locale e verifica delle specifiche REST.">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <title>Tirano Salute API - Swagger UI</title>
+    <style>
+        body { margin: 0; }
+        .topbar { display: none; }
+    </style>
+    <script>
+        (function () {
+            function buildRuntime() {
+                var match = window.location.pathname.match(/^(.*)\/swagger(?:\/.*)?$/);
+                var basePath = match ? match[1] : '';
+                var swaggerRootPath = (basePath + '/swagger').replace(/\/{2,}/g, '/');
+                return {
+                    swaggerRootPath: swaggerRootPath,
+                    canonicalPaths: new Set([
+                        swaggerRootPath,
+                        swaggerRootPath + '/',
+                        swaggerRootPath + '/index.html',
+                    ]),
+                    swaggerBaseUrl: new URL(swaggerRootPath + '/', window.location.origin),
+                    specUrl: new URL(basePath + '/openapi.json', window.location.origin).href,
+                };
+            }
+
+            var runtime = buildRuntime();
+            if (!runtime.canonicalPaths.has(window.location.pathname)) {
+                window.location.replace(runtime.swaggerRootPath);
+                return;
+            }
+
+            window.__swaggerRuntime = runtime;
+
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = new URL('vendor/swagger-ui.css', runtime.swaggerBaseUrl).href;
+            document.head.appendChild(link);
+        })();
+    </script>
+</head>
+<body>
+    <div id="swagger-ui"></div>
+
+    <script>
+        (function () {
+            var runtime = window.__swaggerRuntime;
+            if (!runtime) {
+                return;
+            }
+
+            var script = document.createElement('script');
+            script.src = new URL('vendor/swagger-ui-bundle.js', runtime.swaggerBaseUrl).href;
+            script.onload = function () {
+                window.ui = SwaggerUIBundle({
+                    url: runtime.specUrl,
+                    dom_id: '#swagger-ui',
+                    deepLinking: true,
+                    presets: [SwaggerUIBundle.presets.apis],
+                });
+            };
+            document.body.appendChild(script);
+        })();
+    </script>
+</body>
+</html>
+
