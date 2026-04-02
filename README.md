@@ -286,4 +286,6 @@ Esempio:
 
 Il base path viene rilevato a runtime e applicato sia alle route sia alla spec OpenAPI.
 
+## Note Licenze
 
+Per librerie e font vendorizzati nel repository, consulta `THIRD_PARTY_NOTICES.md`.
