@@ -284,6 +284,17 @@ Esempio:
 
 Il base path viene rilevato a runtime e applicato sia alle route sia alla spec OpenAPI.
 
+## Demo Live
+
+È disponibile una demo live del progetto all’indirizzo: https://edptech.cloud/tiranosalute
+
+La demo è testabile solo da IP geolocalizzati in Italia, tramite filtro GeoIP lato server.
+
+È attivo anche un rate limiter (API incluse) con limiti su richieste al minuto e richieste concorrenti per IP, per mitigare traffico anomalo come bot, scanner automatici, scraping aggressivo o tentativi di saturazione del servizio.
+
+L’ambiente demo viene ripristinato ogni notte alle ore 01:00, con reset del database ai dati iniziali di test.
+
+
 ## Note Licenze
 
 Per librerie e font vendorizzati nel repository, consulta `THIRD_PARTY_NOTICES.md`.
