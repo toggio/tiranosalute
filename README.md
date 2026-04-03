@@ -138,7 +138,7 @@ Il ciclo operativo di una visita è lineare:
 2. il medico la porta in `IN_CORSO`
 3. la conclude e genera il referto
 
-Per esigenze di test e dimostrazione durante la tesi, l'applicazione non blocca tecnicamente l'avvio o la chiusura di una visita futura. In un contesto reale questa regola andrebbe normalmente resa più restrittiva, ma nella demo è lasciata intenzionalmente permissiva per poter provare l'intero flusso operativo senza dipendere dall'orario corrente.
+Per esigenze di test e dimostrazione durante la demo, l'applicazione non blocca tecnicamente l'avvio o la chiusura di una visita futura. In un contesto reale questa regola andrebbe normalmente resa più restrittiva, ma nella demo è lasciata intenzionalmente permissiva per poter provare l'intero flusso operativo senza dipendere dall'orario corrente.
 
 I referti vengono salvati in forma cifrata. `RECEPTION` non può leggerli o decrittarli. `PATIENT`, `DOCTOR` e l'unico account `INTEGRATOR` di sistema accedono solo ai documenti compatibili con il proprio ruolo.
 
@@ -210,11 +210,10 @@ Il paziente può annullare solo le proprie visite ancora `PRENOTATA` e solo entr
 
 ### Cambio password obbligatorio
 
-Quando reception o integrator reimpostano la password di un utente, il sistema attiva `must_change_password`.
+Quando reception o integrator impostano la password di un nuovo utente o la reimpostano, il sistema attiva `must_change_password`.
 
 Al login successivo:
 
-- l'accesso è consentito
 - l'utente resta limitato a profilo, cambio password e logout
 - dopo il cambio password, `must_change_password` torna a `false`
 
@@ -255,7 +254,6 @@ L'account `INTEGRATOR` resta unico e di sistema, ma non fa parte dello staff ges
 - non viene creato dalla UI o dalle API di staff
 - non compare nell'elenco staff
 - non viene aggiornato tramite le API di staff
-- non viene usato come ruolo di promozione per altri utenti
 
 ## API e Swagger
 
