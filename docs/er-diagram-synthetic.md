@@ -118,5 +118,5 @@ erDiagram
     users ||--o{ web_sessions : web_sessions
 ```
 
-Questa vista e pensata per stampa/lettura rapida.
+Vista sintetica pensata per stampa/lettura rapida.
 Per il dettaglio completo: `docs/er-diagram.md`.
