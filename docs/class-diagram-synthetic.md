@@ -71,5 +71,5 @@ classDiagram
     StatsService --> AppointmentService
 ```
 
-Questa vista e pensata per stampa/lettura rapida.
+Vista sintetica pensata per stampa/lettura rapida.
 Per il dettaglio completo: `docs/class-diagram.md`.
