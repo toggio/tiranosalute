@@ -142,7 +142,7 @@ erDiagram
     appointments ||--o| reports : "completed report"
     doctors ||--o{ reports : "authors"
     reports ||--o{ report_keys : "wrapped DEKs"
-users ||--o{ report_keys : "recipient"
-users ||--o{ api_tokens : "bearer tokens"
-users ||--o{ web_sessions : "browser sessions"
+    users ||--o{ report_keys : "recipient"
+    users ||--o{ api_tokens : "bearer tokens"
+    users ||--o{ web_sessions : "browser sessions"
 ```
