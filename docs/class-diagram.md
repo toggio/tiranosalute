@@ -74,55 +74,6 @@ classDiagram
       +dashboard()
     }
 
-    class User {
-      +id
-      +role
-      +email
-      +first_name
-      +last_name
-      +active
-      +must_change_password
-      +patient_id
-      +doctor_id
-    }
-
-    class Patient {
-      +id
-      +first_name
-      +last_name
-      +tax_code
-      +email
-    }
-
-    class Doctor {
-      +id
-      +first_name
-      +last_name
-      +email
-      +internal_code
-      +active
-    }
-
-    class CategoryVisit {
-      +id
-      +name
-    }
-
-    class Appointment {
-      +id
-      +patient_id
-      +doctor_id
-      +visit_category_id
-      +visit_reason
-      +notes
-      +scheduled_start
-      +scheduled_end
-      +status
-      +started_at
-      +ended_at
-      +canceled_at
-    }
-
     class AppointmentRepository
     class AvailabilityRepository
     class CategoryRepository
@@ -177,10 +128,4 @@ classDiagram
 
     StatsService --> StatsRepository
     StatsService --> AppointmentService
-
-    User --> Patient : PATIENT=1
-    User --> Doctor : DOCTOR=1
-    Appointment --> Patient
-    Appointment --> Doctor
-    Appointment --> CategoryVisit
 ```
